@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { items, type Item } from "../lib/storage";
 	import Icon from "@iconify/svelte";
-	import { slide } from "svelte/transition";
+	import { slide, fly } from "svelte/transition";
 
 	export let item: Item;
 	const update = () => {
@@ -20,7 +20,7 @@
 		activeConfirmText = true;
 		setTimeout(() => {
 			activeConfirmText = false;
-		}, 10000);
+		}, 2000);
 	}
 </script>
 
@@ -28,6 +28,7 @@
 	class:done={item.done}
 	class:archived={item.archived}
 	in:slide={{ duration: 1000 }}
+	out:slide={{ duration: 1000 }}
 	class="item"
 >
 	<div class="left">
@@ -39,6 +40,10 @@
 			{new Intl.DateTimeFormat("nl-nl", {
 				hour: "2-digit",
 				minute: "2-digit",
+			}).format(new Date(item.date))}
+		</p>
+		<p>
+			{new Intl.DateTimeFormat("nl-nl", {
 				month: "2-digit",
 				day: "2-digit",
 			}).format(new Date(item.date))}
@@ -46,7 +51,7 @@
 	</div>
 	<div in:slide class="actions">
 		{#if activeConfirmText}
-			<p class="confirmText">Sure?</p>
+			<p in:fly={{x: 10}} out:fly={{x: 10}} class="confirmText">Sure?</p>
 		{/if}
 		<button
 			class:activeConfirmText
@@ -68,7 +73,7 @@
 			>
 		{/if}
 		{#if !item.archived}
-			<button 
+			<button
 				on:click={() => {
 					item.done = !item.done;
 					update();
@@ -92,13 +97,20 @@
 		transition: background-color 0.2s ease-in-out;
 		* {
 			padding: 5px;
-			color: var(--button-foreground);
+			color: var(--button-forgeground);
 		}
 		.left {
 			flex: 1;
 		}
 		.right {
 			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			gap: 2px;
+			* {
+				padding: 0;
+			}
 		}
 		.actions {
 			display: flex;
@@ -134,6 +146,15 @@
 		margin: 0px;
 	}
 
+	.item .confirmText {
+		margin: 0;
+		box-sizing: border-box;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: max-content;
+		color: var(--accent-red);
+	}
 	.activeConfirmText {
 		color: var(--accent-red);
 	}

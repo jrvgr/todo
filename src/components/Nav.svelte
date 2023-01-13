@@ -6,6 +6,7 @@
 	$: done.set(selected);
 	let selected: "done" | "not done" | "all" = "all";
 	let oldSelected: "done" | "not done" | "all" = "all";
+	let wrapped = window.matchMedia("(max-width: 500px)").matches;
 
 	let title: string;
 	let description: string;
@@ -16,73 +17,107 @@
 		items.flush();
 		console.log($sortedItems);
 	}
+
+	window.addEventListener("resize", () => {
+		wrapped = window.matchMedia("(max-width: 800px)").matches;
+	});
 </script>
 
 <nav>
-	<button
-		class:active={!$archived}
-		on:click={() => {
-			archived.set(false);
-			selected = oldSelected;
-		}}
-		class="home"><Icon width="17.5px" icon="lucide:home" /></button
-	>
-	<button
-		class:active={$archived}
-		on:click={() => {
-			oldSelected = selected;
-			archived.set(true);
-			selected = "all";
-		}}
-		class="home"><Icon width="17.5px" icon="lucide:archive" /></button
-	>
-	<button on:click={() => reverse.set(!$reverse)}>
-		<Icon
-			width="17.5px"
-			icon={$reverse ? "lucide:arrow-down-circle" : "lucide:arrow-up-circle"}
-		/>
-	</button>
-	<button
-		on:click={() => document.body.classList.toggle("dark")}
-		class="darkmode"
-	>
-		<Icon
-			width="17.5px"
-			icon={document.body.classList.contains("dark")
-				? "lucide:sun"
-				: "lucide:moon"}
-		/>
-	</button>
-	<select bind:value={selected} name="done" id="done">
-		{#if !$archived}
-			<option selected={true} value="not done">Not done</option>
-			<option value="done">Done</option>
+	<div class="unwrapped">
+		<button
+			class:active={!$archived}
+			on:click={() => {
+				archived.set(false);
+				selected = oldSelected;
+			}}
+			class="home"><Icon width="17.5px" icon="lucide:home" /></button
+		>
+		<button
+			class:active={$archived}
+			on:click={() => {
+				oldSelected = selected;
+				archived.set(true);
+				selected = "all";
+			}}
+			class="home"><Icon width="17.5px" icon="lucide:archive" /></button
+		>
+		<button on:click={() => reverse.set(!$reverse)}>
+			<Icon
+				width="17.5px"
+				icon={$reverse ? "lucide:arrow-down-circle" : "lucide:arrow-up-circle"}
+			/>
+		</button>
+		<button
+			on:click={() => document.body.classList.toggle("dark")}
+			class="darkmode"
+		>
+			<Icon
+				width="17.5px"
+				icon={document.body.classList.contains("dark")
+					? "lucide:sun"
+					: "lucide:moon"}
+			/>
+		</button>
+		<select class:bigSelect={wrapped} bind:value={selected} name="done" id="done">
+			{#if !$archived}
+				<option value="not done">Not done</option>
+				<option value="done">Done</option>
+			{/if}
+			<option selected value="all">All</option>
+		</select>
+		{#if !wrapped}
+			<input bind:value={title} placeholder="Title" type="text" class="title" />
+			<input
+				bind:value={description}
+				placeholder="Description"
+				type="text"
+				class="description"
+			/>
 		{/if}
-		<option value="all">All</option>
-	</select>
-	<input bind:value={title} placeholder="Title" type="text" class="title" />
-	<input
-		bind:value={description}
-		placeholder="Description"
-		type="text"
-		class="description"
-	/>
-	<button on:click={() => add(title, description)} class="add"
-		><Icon width="17.5px" icon="lucide:plus" /></button
-	>
+		<button on:click={() => add(title, description)} class="add"
+			><Icon width="17.5px" icon="lucide:plus" /></button
+		>
+	</div>
+	<div class="wrapped">
+		{#if wrapped}
+			<input bind:value={title} placeholder="Title" type="text" class="title" />
+			<input
+				bind:value={description}
+				placeholder="Description"
+				type="text"
+				class="description"
+			/>
+		{/if}
+	</div>
 </nav>
 
 <style lang="scss">
 	nav {
+		background-color: var(--header-background);
+	}
+	.unwrapped {
 		display: flex;
 		gap: 0.5em;
-		background-color: var(--header-background);
 		padding: 10px;
 	}
 
-	nav * {
-		color: white;
-		height: 40px;
+	.wrapped {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5em;
+		padding-top: 0;
+		.description {
+			margin: 0px 10px 10px;
+		}
+		.title {
+			margin: 0 10px;
+		}
+	}
+
+	.unwrapped *,
+	.wrapped * {
+		min-height: 40px;
 		min-width: 40px;
 		border-radius: 8px;
 		box-sizing: border-box;
@@ -94,7 +129,7 @@
 	}
 
 	button {
-		
+		transition: all 0.2s;
 	}
 
 	button,
@@ -104,6 +139,10 @@
 		background-color: var(--button-background);
 		color: var(--button-foreground);
 		transition: all 0.2s ease-in-out;
+	}
+
+	.bigSelect {
+		flex: 1;
 	}
 
 	.active {
