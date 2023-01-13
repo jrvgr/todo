@@ -39,6 +39,7 @@
 				oldSelected = selected;
 				archived.set(true);
 				selected = "all";
+				done.set("all")
 			}}
 			class="home"><Icon width="17.5px" icon="lucide:archive" /></button
 		>
@@ -59,13 +60,19 @@
 					: "lucide:moon"}
 			/>
 		</button>
-		<select class:bigSelect={wrapped} bind:value={selected} name="done" id="done">
-			{#if !$archived}
+		{#if !$archived}
+			<select
+				class:bigSelect={wrapped}
+				bind:value={selected}
+				name="done"
+				id="done"
+			>
 				<option value="not done">Not done</option>
 				<option value="done">Done</option>
-			{/if}
-			<option selected value="all">All</option>
-		</select>
+				<option selected value="all">All</option>
+			</select>
+		{/if}
+
 		{#if !wrapped}
 			<input bind:value={title} placeholder="Title" type="text" class="title" />
 			<input
@@ -147,5 +154,18 @@
 
 	.active {
 		color: var(--accent-blue);
+	}
+
+	@media screen and (max-width: 800px) {
+		.bigSelect {
+			flex: initial
+		}
+
+		.unwrapped {
+			justify-content: space-evenly;
+			* {
+				width: 100%;
+			}
+		}
 	}
 </style>

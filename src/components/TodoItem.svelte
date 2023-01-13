@@ -36,54 +36,56 @@
 		<p>{item.description}</p>
 	</div>
 	<div class="right">
-		<p>
-			{new Intl.DateTimeFormat("nl-nl", {
-				hour: "2-digit",
-				minute: "2-digit",
-			}).format(new Date(item.date))}
-		</p>
-		<p>
-			{new Intl.DateTimeFormat("nl-nl", {
-				month: "2-digit",
-				day: "2-digit",
-			}).format(new Date(item.date))}
-		</p>
-	</div>
-	<div in:slide class="actions">
-		{#if activeConfirmText}
-			<p in:fly={{x: 10}} out:fly={{x: 10}} class="confirmText">Sure?</p>
-		{/if}
-		<button
-			class:activeConfirmText
-			on:click={() => {
-				if (activeConfirmText) remove();
-				activateConfirmText();
-			}}><Icon width="17.5px" icon="lucide:trash-2" /></button
-		>
-		{#if item.done}
+		<div class="date">
+			<p>
+				{new Intl.DateTimeFormat("nl-nl", {
+					hour: "2-digit",
+					minute: "2-digit",
+				}).format(new Date(item.date))}
+			</p>
+			<p>
+				{new Intl.DateTimeFormat("nl-nl", {
+					month: "2-digit",
+					day: "2-digit",
+				}).format(new Date(item.date))}
+			</p>
+		</div>
+		<div in:slide class="actions">
+			{#if activeConfirmText}
+				<p in:fly={{ x: 10 }} out:fly={{ x: 10 }} class="confirmText">Sure?</p>
+			{/if}
 			<button
+				class:activeConfirmText
 				on:click={() => {
-					item.archived = !item.archived;
-					update();
-				}}
-				><Icon
-					width="17.5px"
-					icon={item.archived ? "lucide:archive-restore" : "lucide:archive"}
-				/></button
+					if (activeConfirmText) remove();
+					activateConfirmText();
+				}}><Icon width="17.5px" icon="lucide:trash-2" /></button
 			>
-		{/if}
-		{#if !item.archived}
-			<button
-				on:click={() => {
-					item.done = !item.done;
-					update();
-				}}
-				><Icon
-					width="17.5px"
-					icon={item.done ? "lucide:x" : "lucide:check"}
-				/></button
-			>
-		{/if}
+			{#if item.done}
+				<button
+					on:click={() => {
+						item.archived = !item.archived;
+						update();
+					}}
+					><Icon
+						width="17.5px"
+						icon={item.archived ? "lucide:archive-restore" : "lucide:archive"}
+					/></button
+				>
+			{/if}
+			{#if !item.archived}
+				<button
+					on:click={() => {
+						item.done = !item.done;
+						update();
+					}}
+					><Icon
+						width="17.5px"
+						icon={item.done ? "lucide:x" : "lucide:check"}
+					/></button
+				>
+			{/if}
+		</div>
 	</div>
 </div>
 
@@ -104,23 +106,28 @@
 		}
 		.right {
 			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			gap: 2px;
-			* {
-				padding: 0;
+			flex-direction: row;
+			min-height: 60px;
+			.date {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				gap: 2px;
+				* {
+					padding: 0;
+				}
 			}
-		}
-		.actions {
-			display: flex;
-			justify-content: flex-end;
-			transition: all 0.2s ease-in-out;
-			gap: 5px;
-			width: auto;
-			overflow-x: hidden;
-			padding: 10px;
-			align-items: center;
+			.actions {
+				display: flex;
+				justify-content: flex-end;
+				transition: all 0.2s ease-in-out;
+				gap: 5px;
+				width: auto;
+				overflow-x: hidden;
+				padding: 10px;
+				align-items: center;
+			}
 		}
 		.actions * {
 			min-width: 40px;
@@ -133,7 +140,6 @@
 			margin: 0;
 		}
 	}
-
 	.done {
 		background-color: var(--accent-green);
 	}
@@ -157,5 +163,22 @@
 	}
 	.activeConfirmText {
 		color: var(--accent-red);
+	}
+
+	@media screen and (max-width: 800px) {
+		.item {
+			flex-direction: column-reverse;
+			.right {
+				justify-content: space-between;
+				padding-bottom: 0;
+				.date {
+					flex-direction: row-reverse;
+					gap: 5px;
+				}
+			}
+			.left {
+				padding-top: 0;
+			}
+		}
 	}
 </style>
